@@ -1,0 +1,24 @@
+*{
+    color: #2B5DA8;
+    font-family: sans-serif;
+    font-size: 10pt;
+}
+table{
+    border: 5px double #5175FF;
+    width: 80%;
+}
+#header{
+    background: #C0C3FF;
+}
+th, td{
+    border: 2px solid #5175FF;
+    text-align: center;
+}
+.time{
+    font-weight: bold;
+}
+.messages, .time_area{
+    text-align: left;
+    float: none;
+    margin-left: 5%;
+}
