@@ -22,3 +22,6 @@ th, td{
     float: none;
     margin-left: 5%;
 }
+#number{
+    display: none;
+}

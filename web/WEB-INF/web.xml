@@ -5,11 +5,11 @@
          version="4.0">
 
     <servlet>
-        <servlet-name>controllerServlet</servlet-name>
+        <servlet-name>ControllerServlet</servlet-name>
         <servlet-class>main.ControllerServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>controllerServlet</servlet-name>
+        <servlet-name>ControllerServlet</servlet-name>
         <url-pattern>/controller</url-pattern>
     </servlet-mapping>
 
@@ -21,4 +21,13 @@
         <servlet-name>AreaCheckServlet</servlet-name>
         <url-pattern>/checking</url-pattern>
     </servlet-mapping>
+
+    <security-constraint>
+        <display-name>Restrict Access</display-name>
+        <web-resource-collection>
+            <web-resource-name>include_only_servlets</web-resource-name>
+            <url-pattern>/checking</url-pattern>
+        </web-resource-collection>
+        <auth-constraint/>
+    </security-constraint>
 </web-app>

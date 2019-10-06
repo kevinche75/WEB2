@@ -29,9 +29,9 @@ public class AreaCheckServlet extends HttpServlet {
         boolean flagY = false;
         boolean flagR = false;
 
-        ArrayList<Float> arrayY = new ArrayList<>();
-        float X = 0;
-        float R = 0;
+        ArrayList<Double> arrayY = new ArrayList<>();
+        double X = 0;
+        double R = 0;
         PrintWriter out = response.getWriter();
 
         response.setContentType("text/html");
@@ -44,7 +44,7 @@ public class AreaCheckServlet extends HttpServlet {
             out.println("<!DOCTYPE html>" +
                     "<html>" +
                     "<head>" +
-                    "<title>Result</title>" +
+                    "<title>Response</title>" +
                     "<meta charset='utf-8'>" +
                     "<link rel='stylesheet' type='text/css' href='table.css'>" +
                     "</head>" +
@@ -54,50 +54,72 @@ public class AreaCheckServlet extends HttpServlet {
             //Валидация X
 
             try{
-                X = Float.parseFloat(request.getParameter("x").replace(',','.').trim());
+                X = Double.parseDouble(request.getParameter("x").replace(',','.').trim());
                 if(X>5 || X<-5)
-                    out.println("Введённое значение X вне диапозона<br>");
+                    out.println("X is out of range<br>");
                 else flagX = true;
             } catch (NumberFormatException e){
-                out.println("Введённое значение X должно быть числом<br>");
+                out.println("X must be a number<br>");
             }
 
             //Валидация Y
 
             for(int i = -3; i<7; i++){
                 if(request.getParameter("chb"+i)!=null){
-                   try{
-                       Float Y = new Float(request.getParameter("chb"+i).replace(',','.').trim());
-                       if(Y > 5 || Y <-5){
-                           out.println("Введённое значение Y вне диапозона<br>");
-                       }
+                    try{
+                        Double Y = new Double(request.getParameter("chb"+i).replace(',','.').trim());
+                        if(Y > 5 || Y <-5){
+                            out.println("Y is out of range<br>");
+                        }
                         arrayY.add(Y);
                         flagY = true;
-                   } catch (NumberFormatException e){
-                       out.println("Введённое значение Y должно быть числом<br>");
-                   }
+                    } catch (NumberFormatException e){
+                        out.println("Y must be a number<br>");
+                    }
                 }
             }
 
             //Валидация R
 
             try{
-                R = Float.parseFloat(request.getParameter("rb").replace(',','.').trim());
+                R = Double.parseDouble(request.getParameter("rb").replace(',','.').trim());
                 if(R > 3 || R<-3){
-                    out.println("Введённое значение R вне диапозона<br>");
+                    out.println("R is out of range<br>");
                 }
                 flagR = true;
             } catch (NumberFormatException e){
-                out.println("Введённое значение R должно быть числом<br>");
+                out.println("R must be a number<br>");
             }
 
             out.println("<br></div>");
 
             if(flagX&&flagY&&flagR){
-                for(int i = 0; i > -1; i--){
+                for(int i = 0; i < arrayY.size(); i++){
                     list.add(new Point(X, arrayY.get(i), R));
                 }
+                out.println("<p id = 'number'>" + arrayY.size() + "</p>");
+            } else {
+                out.println("<p id = 'number'>" + 0 + "</p>");
             }
+
+            out.println("<table  align='center'>" +
+                    "<tr id = 'header'>" +
+                    "<th><h5>Coordinate X</h5></th>" +
+                    "<th><h5>Coordinate Y</h5></th>" +
+                    "<th><h5>Value R</h5></th>" +
+                    "<th><h5>Probitie?</h5></th>" +
+                    "</tr>");
+
+            for(int i = list.size()-1; i > -1; i--){
+                out.println("<tr>" +
+                        "<td>" + list.get(i).getX() + "</td>" +
+                        "<td>" + list.get(i).getY() + "</td>" +
+                        "<td>" + list.get(i).getR() + "</td>" +
+                        "<td>" + list.get(i).isInArea() + "</td>" +
+                        "</tr>");
+            }
+
+            out.println("</table>");
 
         } finally {
             out.close();
@@ -105,32 +127,32 @@ public class AreaCheckServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect("/control");
+        response.sendRedirect("/controller");
     }
 
     public class Point{
 
-        private float x;
-        private float y;
-        private float r;
+        private double x;
+        private double y;
+        private double r;
         private boolean isInArea;
 
-        public Point(float x, float y, float r){
+        public Point(double x, double y, double r){
             this.x = x;
             this.y = y;
             this.r = r;
             setInArea();
         }
 
-        public float getX() {
+        public double getX() {
             return x;
         }
 
-        public float getY() {
+        public double getY() {
             return y;
         }
 
-        public float getR() {
+        public double getR() {
             return r;
         }
 
@@ -148,7 +170,7 @@ public class AreaCheckServlet extends HttpServlet {
                 return;
             }
             if(x>0 && y<=0){
-                isInArea = Math.pow(x, 2) + Math.pow(y,2) <= Math.pow(r, 2);
+                isInArea = Math.pow(x, 2) + Math.pow(y,2) <= Math.pow(r/2, 2);
                 return;
             }
             if(x<=0 && y<=0){

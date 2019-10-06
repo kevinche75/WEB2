@@ -82,6 +82,7 @@
 </body>
 <script>
     let plot = document.getElementById("areas");
+    let ctx = plot.getContext('2d');
     plot.addEventListener("click", clickCanvas, false);
 
     function validateR(){
@@ -99,7 +100,7 @@
         document.getElementById("messageY").innerHTML = "<br>";
         let flag = false;
 
-         let valueX = document.forms['form'].elements['X'].value.trim();
+         let valueX = document.forms['form'].elements['x'].value.trim();
          if(valueX===""){
              document.getElementById("messageX").innerHTML = "Введите X";
              flag = false;
@@ -129,8 +130,6 @@
         return flag;
     }
     function paint(R){
-        let plot = document.getElementById("areas");
-        let ctx = plot.getContext('2d');
         ctx.fillStyle = "#fff";
         ctx.fillRect(0,0, 270, 270);
 
@@ -172,6 +171,15 @@
         ctx.fillText("x", 260, 145);
         ctx.fillText("y", 145, 10);
     }
+    function paintPoint(x, y){
+        let xPoint = x*25 + 135;
+        let yPoint = -y*25+135;
+        console.log(ctx.fillStyle);
+        ctx.beginPath();
+        ctx.arc(xPoint, yPoint, 3, 0, Math.PI*2, false);
+        ctx.closePath();
+        ctx.fill();
+    }
 
     $(function(){
         paint(0);
@@ -185,10 +193,24 @@
     $('#form').submit(function () {
         if(validateXY()&&validateR()) {
             $.post(
-                "/controller",
+                "controller",
                 $('#form').serialize(),
                 function (msg) {
                     $('#result').html(msg);
+                    let number = $('#number').text();
+                    let rows = $('table').find('tr');
+                    for(i = 1; i <= number; i++){
+                        let tdSet = $(rows[i]).find('td');
+                        if($(tdSet[3]).text().trim() == 'true'){
+                            ctx.fillStyle = 'green';
+                            console.log('green');
+                        } else {
+                            ctx.fillStyle = 'red';
+                            console.log('red');
+                        }
+                        paintPoint($(tdSet[0]).text(), $(tdSet[1]).text());
+                        console.log($(tdSet[0]).text(), $(tdSet[1]).text(),$(tdSet[3]).text());
+                    }
                 }
             )
         }
@@ -200,24 +222,26 @@
         let y;
         let r;
         if(validateR()){
-            if (e.pageX != undefined && e.pageY != undefined) {
-                x = e.pageX;
-                y = e.pageY;
-            }
-            else {
-                x = e.clientX + document.body.scrollLeft +
-                    document.documentElement.scrollLeft;
-                y = e.clientY + document.body.scrollTop +
-                    document.documentElement.scrollTop;
-            }
-            x = (x - plot_canvas.offsetLeft -135)/25;
-            y = (y - plot_canvas.offsetTop -135)/25;
+                x = e.offsetX;
+                y = e.offsetY;
+            x = (x -135)/25;
+            y = -(y -135)/25;
             r = $('input[name=rb]:checked').val();
             $.post(
-                "/controller",
+                "controller",
                 {x: x, chb6: y, rb: r},
                 function (msg) {
                     $('#result').html(msg);
+                    let rows = $('table').find('tr');
+                    let tdSet = $(rows[1]).find('td');
+                    if($(tdSet[3]).text().trim() == 'true'){
+                        ctx.fillStyle = 'green';
+                        console.log('green');
+                    } else {
+                        ctx.fillStyle = 'red';
+                        console.log('red');
+                    }
+                    paintPoint($(tdSet[0]).text(), $(tdSet[1]).text());
                 }
             )
         }

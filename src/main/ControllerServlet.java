@@ -18,13 +18,13 @@ public class ControllerServlet extends HttpServlet {
             }
         }
         if(x == null || r == null || !flagY){
-            response.sendRedirect("/index.jsp");
+            request.getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
         } else {
             request.getServletContext().getRequestDispatcher("/checking").forward(request, response);
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect("/index.jsp");
+        request.getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
     }
 }
