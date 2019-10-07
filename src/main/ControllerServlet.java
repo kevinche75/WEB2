@@ -20,7 +20,7 @@ public class ControllerServlet extends HttpServlet {
         if(x == null || r == null || !flagY){
             request.getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
         } else {
-            request.getServletContext().getRequestDispatcher("/checking").forward(request, response);
+            request.getServletContext().getRequestDispatcher("/WEB-INF/checking").forward(request, response);
         }
     }
 
