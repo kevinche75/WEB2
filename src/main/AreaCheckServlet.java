@@ -20,8 +20,6 @@ public class AreaCheckServlet extends HttpServlet {
         this.context = config.getServletContext();
     }
 
-    @Override
-    public void destroy() {}
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
