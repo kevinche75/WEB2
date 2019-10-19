@@ -100,6 +100,17 @@
         document.getElementById("messageY").innerHTML = "<br>";
         let flag = false;
 
+        for(let i=-3; i<6; i++){
+            if(document.getElementById("chb"+i).checked){
+                flag = true;
+                break
+            }
+        }
+
+        if(!flag){
+            document.getElementById("messageY").innerHTML = "Введите Y";
+        }
+
          let valueX = document.forms['form'].elements['x'].value.trim();
          if(valueX===""){
              document.getElementById("messageX").innerHTML = "Введите X";
@@ -110,22 +121,15 @@
                  document.getElementById("messageX").innerHTML = "X должен быть числом";
                  flag = false;
              } else {
-                 if (!/^-?0*[0-2]([.,]\d+)?$/
-                     .test(valueX)) {
-                     flag = false;
+                 if (parseFloat(valueX.replace(',','.'))<=-3 || parseFloat(valueX.replace(',','.'))>=3) {
                      document.getElementById("messageX").innerHTML = "X находится вне диапозона";
+                     flag = false;
                  }
              }
          }
 
-        for(let i=-3; i<6; i++){
-            if(document.getElementById("chb"+i).checked){
-                flag=true;
-                break
-            }
-        }
-        if(!flag){
-            document.getElementById("messageY").innerHTML = "Введите Y";
+        if(!validateR()){
+            return false;
         }
         return flag;
     }
@@ -181,6 +185,30 @@
         ctx.fill();
     }
 
+    function points(){
+        let rows = $('table').find('tr');
+        let number = rows.length;
+        for(i = 1; i < number; i++){
+            let tdSet = $(rows[i]).find('td');
+            r = Number($(tdSet[2]).text().trim());
+            R = Number($('input[name=rb]:checked').val());
+            if(r == R) {
+                if ($(tdSet[3]).text().trim() == 'true') {
+                    ctx.fillStyle = 'green';
+                    console.log('green');
+                } else {
+                    ctx.fillStyle = 'red';
+                    console.log('red');
+                }
+            } else {
+                ctx.fillStyle = 'grey';
+                console.log('grey');
+            }
+            paintPoint($(tdSet[0]).text(), $(tdSet[1]).text());
+            console.log($(tdSet[0]).text(), $(tdSet[1]).text(),$(tdSet[3]).text());
+        }
+    }
+
     $(function(){
         paint(0);
     });
@@ -188,29 +216,18 @@
     $('input[name=rb]').change( function () {
         Radius = $(this).val();
         paint(Radius*25);
+        points();
     });
 
     $('#form').submit(function () {
-        if(validateXY()&&validateR()) {
+        let flag = Boolean(validateXY());
+        if(flag) {
             $.post(
                 "controller",
                 $('#form').serialize(),
                 function (msg) {
                     $('#result').html(msg);
-                    let number = $('#number').text();
-                    let rows = $('table').find('tr');
-                    for(i = 1; i <= number; i++){
-                        let tdSet = $(rows[i]).find('td');
-                        if($(tdSet[3]).text().trim() == 'true'){
-                            ctx.fillStyle = 'green';
-                            console.log('green');
-                        } else {
-                            ctx.fillStyle = 'red';
-                            console.log('red');
-                        }
-                        paintPoint($(tdSet[0]).text(), $(tdSet[1]).text());
-                        console.log($(tdSet[0]).text(), $(tdSet[1]).text(),$(tdSet[3]).text());
-                    }
+                    points();
                 }
             )
         }
@@ -232,16 +249,7 @@
                 {x: x, chb6: y, rb: r},
                 function (msg) {
                     $('#result').html(msg);
-                    let rows = $('table').find('tr');
-                    let tdSet = $(rows[1]).find('td');
-                    if($(tdSet[3]).text().trim() == 'true'){
-                        ctx.fillStyle = 'green';
-                        console.log('green');
-                    } else {
-                        ctx.fillStyle = 'red';
-                        console.log('red');
-                    }
-                    paintPoint($(tdSet[0]).text(), $(tdSet[1]).text());
+                    points();
                 }
             )
         }
